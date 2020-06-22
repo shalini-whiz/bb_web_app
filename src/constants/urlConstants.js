@@ -33,5 +33,7 @@ export const urls = {
     "setSettings": APP_BASE_URL + "financial/setSettings",
     "getSettings": APP_BASE_URL + "financial/getSettings",
     "invoiceReceipt": APP_BASE_URL + "supplier/invoiceReceipt",
-    "getEntityDetails": APP_BASE_URL + "business/getEntityDetails"
+    "getEntityDetails": APP_BASE_URL + "business/getEntityDetails",
+    "disableInvoice": APP_BASE_URL + "supplier/disableInvoice",
+    "setDefInvoice": APP_BASE_URL + "supplier/setDefInvoice"
 }

@@ -93,17 +93,14 @@ class FinanceView extends React.Component {
                             <Grid container spacing={3}>
 
                                 <Grid item md={2} sm={2}>
+                                <p>CITY</p>
                                     <List
                                         aria-labelledby="nested-list-subheader"
-                                        subheader={
-                                            <ListSubheader component="div" id="nested-list-subheader">
-                                                CITY
-        </ListSubheader>
-                                        }
+                                       
                                         style={{
                                             border: '1px solid grey', position: 'relative',
                                             overflow: 'auto',
-                                            maxHeight: 450,
+                                            maxHeight: '50%',
                                         }}
                                     //className={classes.root}
                                     >

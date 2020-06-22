@@ -51,17 +51,21 @@ class ManageInvoice extends React.Component {
         }
         genInvoiceColumns.find(item => {
             if (item.field == "orgName") {
-                item.render = rowData => (
-                    <Typography component="div">
-                        <Link
-                            onClick={(e) =>
-                                this.handleUserDialog(e, rowData.userId)
-                            }
-                        >
-                            {commons.titleCase(rowData.orgName)}
-                        </Link>
-                    </Typography>
-                )
+                item.render = rowData => {
+                    let styleObj = (rowData.status === "inactive" ? { 'color':'red'} : {})
+                    return (
+                        <Typography component="div">
+                            <Link
+                                onClick={(e) =>
+                                    this.handleUserDialog(e, rowData.userId)
+                                }
+                                style={styleObj}
+                            >
+                                {commons.titleCase(rowData.orgName)}
+                            </Link>
+                        </Typography>
+                    )
+                }
             }
         })
 
@@ -88,6 +92,10 @@ class ManageInvoice extends React.Component {
         let params = {
             "city": city,
             "role": role
+        }
+        if (AuthService.getUserRole() === "supplier") {
+            params["connectorId"] = AuthService.getUserId()
+            params["connectionType"] = "b2s"
         }
 
         APIService.apiCall("POST", params, "getInvoices")
@@ -148,7 +156,7 @@ class ManageInvoice extends React.Component {
         APIService.apiCall("POST", params, "invoiceReceipt")
             .then(res => res.json())
             .then(res => {
-                this.setState({"showDialog":false,selectedItem:undefined,"dialogTitle":"","okTitle":"",okDialog:undefined})
+                this.setState({ "showDialog": false, selectedItem: undefined, "dialogTitle": "", "okTitle": "", okDialog: undefined })
                 if (res.status && res.status === "success" && res.data) {
                     const byteCharacters = atob(res.data);
                     const byteNumbers = new Array(byteCharacters.length);
@@ -222,7 +230,11 @@ class ManageInvoice extends React.Component {
             this.setState({ invoiceStatus: "paid" })
         }
 
-        let params = Object.assign(data, { "city": this.props.city })
+        let params = Object.assign(data, { "city": this.props.city, "role": this.props.role })
+        if (AuthService.getUserRole() === "supplier") {
+            params["connectorId"] = AuthService.getUserId()
+            params["connectionType"] = "b2s"
+        }
         APIService.apiCall("POST", params, "getInvoices")
             .then(res => res.json())
             .then(res => {
@@ -274,18 +286,19 @@ class ManageInvoice extends React.Component {
 
         return (<div className={classes.pageContent}>
             <Paper elevation={3} square variant="outlined">
-                <FormGroup row style={{padding:'10px'}}>
+                <FormGroup row style={{ padding: '10px' }}>
                     {statusSelection}
                 </FormGroup>
 
 
-                
+
 
                 {invoiceStatus != "paid" ? <MaterialTable
                     title=""
                     columns={genInvoiceColumns}
                     data={memberList}
                     editable={{
+                        isEditable: rowData => rowData.status === "active",
                         onRowUpdate: (newData, oldData) =>
                             new Promise((resolve, reject) => {
                                 setTimeout(() => {
@@ -317,11 +330,23 @@ class ManageInvoice extends React.Component {
 
                         paging: false,
                         actionsColumnIndex: -1,
+                        rowStyle: rowData => {
+                            if (rowData.status === "inactive") {
+                                return {
+                                    color: 'red',
+                                    //background:'rgb(255,0,0,0.2)'
+
+
+                                };
+                            }
+
+                            return {};
+                        }
 
                     }}
                     actions={[
                         rowData => (
-                            invoiceStatus != "paid" ?
+                            invoiceStatus != "paid" && rowData.status === "active" ?
                                 {
                                     icon: render => (<Button
                                         color="primary"
@@ -329,12 +354,12 @@ class ManageInvoice extends React.Component {
                                         style={{ textTransform: 'none' }}
                                         size="small"
                                     >
-                                        {rowData.status === "active" ? 'Disable' : 'Enable'}
+                                        {rowData.status === "active" ? 'Cancel' : ''}
                                     </Button>),
                                     tooltip: 'Invoice',
                                     onClick: (event, rowData) => {
                                         console.log("invoiceStatus ... " + invoiceStatus)
-                                        let titleTxt = (rowData.status === "active") ? "Disable " : "Enable ";
+                                        let titleTxt = (rowData.status === "active") ? "Cancel " : " ";
                                         titleTxt += commons.titleCase(rowData.orgName) + " Invoice ";
                                         this.setState({
                                             "showDialog": (!this.state.showDialog),
@@ -347,56 +372,57 @@ class ManageInvoice extends React.Component {
                                     }
 
 
-                                } : {
-
-                                }
+                                } : undefined
                         ),
                         ,
                         rowData => (
-                            rowData.paymentStatus == "due" ? {
-                                icon: 'payment',
-                                title: 'payment',
-                                onClick: (event, rowData) => { this.handlePaymentDialog(event, rowData) }
-                            } : {
-                                    icon: 'receipt',
-                                    title: 'receipt',
-                                    onClick: (event, rowData) => { this.downloadReceipt(event, rowData) }
-                                }
+                            rowData.status === "active" ? (
+                                rowData.paymentStatus == "due" ? {
+                                    icon: 'payment',
+                                    title: 'payment',
+                                    onClick: (event, rowData) => { this.handlePaymentDialog(event, rowData) }
+                                } : {
+                                        icon: 'receipt',
+                                        title: 'receipt',
+                                        onClick: (event, rowData) => { this.downloadReceipt(event, rowData) }
+                                    }
+                            ) : undefined
+
                         ),
                     ]}
                 /> : <MaterialTable
-                title=""
-                columns={paymentReportColumns}
-                data={memberList}
-                
-                options={{
-                    headerStyle: {
-                        backgroundColor: '#01579b',
-                        color: '#FFF'
-                    },
+                        title=""
+                        columns={paymentReportColumns}
+                        data={memberList}
 
-                    paging: false,
-                    actionsColumnIndex: -1,
+                        options={{
+                            headerStyle: {
+                                backgroundColor: '#01579b',
+                                color: '#FFF'
+                            },
 
-                }}
-                actions={[
-                    rowData => (
-                        rowData.paymentStatus == "due" ? {
-                            icon: 'payment',
-                            title: 'payment',
-                            onClick: (event, rowData) => { this.handlePaymentDialog(event, rowData) }
-                        } : {
-                                icon: 'receipt',
-                                title: 'receipt',
-                                onClick: (event, rowData) => { this.downloadReceipt(event, rowData) }
-                            }
-                    ),
-                ]}
-            />}
+                            paging: false,
+                            actionsColumnIndex: -1,
+
+                        }}
+                        actions={[
+                            rowData => (
+                                rowData.paymentStatus == "due" ? {
+                                    icon: 'payment',
+                                    title: 'payment',
+                                    onClick: (event, rowData) => { this.handlePaymentDialog(event, rowData) }
+                                } : {
+                                        icon: 'receipt',
+                                        title: 'receipt',
+                                        onClick: (event, rowData) => { this.downloadReceipt(event, rowData) }
+                                    }
+                            ),
+                        ]}
+                    />}
 
                 < br /> <br />
 
-                <Grid container justify="flex-end" spacing={4} style={{"align":"flex-end"}}>
+                <Grid container justify="flex-end" spacing={4} style={{ "align": "flex-end" }}>
                     {buttonList.map(item => {
                         return (
                             <Grid item md={4}>

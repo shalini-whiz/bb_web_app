@@ -50,6 +50,10 @@ class InvoiceView extends React.Component {
             "role": role
         }
 
+        if (AuthService.getUserRole() === "supplier") {
+            params["connectorId"] = AuthService.getUserId()
+            params["connectionType"] = "b2s"
+        }
 
 
         APIService.apiCall("POST", params, "getDefaultInvoices")
@@ -101,7 +105,7 @@ class InvoiceView extends React.Component {
     render() {
         const { classes } = this.props
         const { memberList, selectedIDs, rowsPerPage, page, status, message } = this.state;
-        console.log(message+" ... 456... "+status)
+        console.log(message + " ... 456... " + status)
 
 
         return (<div className={classes.pageContent}>

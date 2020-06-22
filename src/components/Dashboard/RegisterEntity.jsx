@@ -50,6 +50,8 @@ export default class RegisterEntity extends React.Component {
 
     componentDidMount() {
         let { data } = this.props;
+
+        console.log("data ... "+JSON.stringify(data))
         let addMemberFormData = []
         if (!data)
             addMemberFormData = fetchFormByType("registerBusiness");
@@ -243,6 +245,7 @@ export default class RegisterEntity extends React.Component {
 
             if (result === undefined) {
                 if (activeStep === (this.getNumberOfSteps() - 1)) {
+                    let { data } = this.props;
 
                     let memberFormData = [...this.state.memberFormData];
                     memberFormData = [...this.state.memberFormData, ...this.state.stepContent]
@@ -261,9 +264,14 @@ export default class RegisterEntity extends React.Component {
                     apiData["rootId"] = "5ec28dd9b3ef9e0017b7a6b5";
                     apiData["pRole"] = "rootorganization";
 
-                    let { data } = this.props;
-                    let url = (data && data.role === "supplier") ? "createSupplier" : "createBusiness";
+                    console.log("data props ... "+JSON.stringify(data))
+                    if (AuthService.getUserRole() === "supplier") {
+                        apiData["vendorId"] = AuthService.getUserId()
+                        apiData["vendorRole"] = AuthService.getUserRole()
+                        if (data && data.role == "business") apiData["connectionType"] = "b2s"
+                    }
 
+                    let url = (data && data.role === "supplier") ? "createSupplier" : "createBusiness";
 
 
 
@@ -348,7 +356,7 @@ export default class RegisterEntity extends React.Component {
                 <CardContent>
 
                     {this.state.showForm ? (<div>
-                        <Stepper activeStep={activeStep} connector={<StepConnector/>}>
+                        <Stepper activeStep={activeStep} connector={<StepConnector />}>
                             {this.getSteps()}
                         </Stepper>
 
@@ -366,8 +374,8 @@ export default class RegisterEntity extends React.Component {
                                     <div>
                                         {this.getStepContent(activeStep)}
 
-                                        <br/><br/>
-                                        <div style={{display:'flex',justifyContent:'space-between'}}>
+                                        <br /><br />
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <Button
                                                 variant="contained" color="primary" size="small"
                                                 disabled={activeStep === 0}

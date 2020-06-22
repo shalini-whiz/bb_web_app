@@ -7,12 +7,28 @@ const drawerWidth = 200;
 
 
 const darkTheme = {
-    'cardHeader': "#9e9e9e"
+    'cardHeader': "#9e9e9e",
+    'cardTitle': 'black',
+    "primaryMain": "#0066cc",
+    "secondaryMain": "#ff9100",
+    "drawerBackground": 'rgba(0, 0, 0, 0.55)',
+    "stepConnectorActive": "#0066cc",
+    "stepConnectorCompleted": "#0066cc",
+    "stepLine": "#eaeaf0"
+
 
 }
 
 const lightTheme = {
-    'cardHeader': "#e0e0e0"
+    'cardHeader': "#e0e0e0",
+    'cardTitle': 'black',
+    "primaryMain": "#0066cc",
+    "secondaryMain": "#ff9100",
+    "drawerBackground": 'rgba(0, 0, 0, 0.55)',
+    "stepConnectorActive": "#0066cc",
+    "stepConnectorCompleted": "#0066cc",
+    "stepLine": "#eaeaf0"
+
 }
 
 const setTheme = (themeStatus) => {
@@ -23,10 +39,10 @@ const setTheme = (themeStatus) => {
                 // type: 'light'
 
                 primary: {
-                    main: "#0066cc "
+                    main: themeSettings.primaryMain
                 },
                 secondary: {
-                    main: '#ff9100',
+                    main: themeSettings.secondaryMain
                 },
                 // secondary: {
                 //     light: '#0066ff',
@@ -56,12 +72,12 @@ const setTheme = (themeStatus) => {
                 MuiDrawer: {
 
                     root: {
-                        backgroundColor: '#4D000000',
+                        backgroundColor: themeSettings.drawerBackground,
                         width: drawerWidth,
 
                     },
                     paper: {
-                        backgroundColor: '#4D000000',
+                        backgroundColor: themeSettings.drawerBackground,
                         width: drawerWidth,
                     },
                 },
@@ -69,11 +85,10 @@ const setTheme = (themeStatus) => {
                 MuiCardHeader: {
                     root: {
                         backgroundColor: themeSettings.cardHeader,
-                        color: 'black',
-
+                        color: themeSettings.cardTitle,
                     },
                     title: {
-                        color: 'black',
+                        color: themeSettings.cardTitle,
                         fontSize: '14px',
                         lineHeight: '1em'
                     },
@@ -125,7 +140,7 @@ const setTheme = (themeStatus) => {
                         },
                     },
                 },
-        
+
                 MuiStepConnector: {
                     alternativeLabel: {
                         top: 10,
@@ -134,16 +149,16 @@ const setTheme = (themeStatus) => {
                     },
                     active: {
                         '& $line': {
-                            borderColor: '#0066cc',
+                            borderColor: themeSettings.stepConnectorActive,
                         },
                     },
                     completed: {
                         '& $line': {
-                            borderColor: '#0066cc',
+                            borderColor: themeSettings.stepConnectorCompleted,
                         },
                     },
                     line: {
-                        borderColor: '#eaeaf0',
+                        borderColor: themeSettings.stepLine,
                         borderTopWidth: 3,
                         borderRadius: 1,
                     },
@@ -151,7 +166,7 @@ const setTheme = (themeStatus) => {
             }
         });
 
-   
+
     return (
         theme1
 

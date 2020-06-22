@@ -98,6 +98,8 @@ const compStyles = (theme) => ({
         "&:hover": {
             opacity: 0.5
         }
+    },
+    dashboard:{
 
     },
     links: {
@@ -119,7 +121,7 @@ const compStyles = (theme) => ({
         backgroundColor: red[600],
         // color:"#ffffff"
     },
-    
+
 
 });
 

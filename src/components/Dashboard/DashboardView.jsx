@@ -35,12 +35,17 @@ class DashboardView extends React.Component {
             "tabList": [],
             tabValue: 0,
             tabItem: undefined,
-            TabComponent: RegisterEntity
+            TabComponent: undefined
         }
     }
 
     async componentDidMount() {
         let tabs = await fetchMenu("registerEntity")
+        if (tabs.length) {
+            let item = tabs[0]
+            this.setState({ "tabValue": item.value, "TabComponent": item.component, tabItem: item })
+
+        }
         this.setState({ tabList: tabs })
     }
 

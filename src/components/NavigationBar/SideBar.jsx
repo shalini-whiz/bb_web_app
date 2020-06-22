@@ -28,8 +28,15 @@ class SideBar extends React.Component {
 
 
         const menuList = dashboardMenu.map((item, index) => (
-            <ListItem key={index} component={Link} to={item.path} className={classes.listItem}>
-                <ListItemIcon className={classes.listItem}>{<item.icon />}</ListItemIcon>
+            <ListItem key={index} component={Link} to={item.path} 
+            // className={classes.listItem}
+            style={{"color":"white"}}
+            >
+                <ListItemIcon 
+                // className={classes.listItem}
+                style={{"color":"white"}}
+
+                >{<item.icon />}</ListItemIcon>
                 <ListItemText primary={item.name} />
             </ListItem>
         ))
